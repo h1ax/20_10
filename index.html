@@ -3,57 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fetch URL from Param</title>
+    <title>Embed URL from Parameter</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-        #response {
-            white-space: pre-wrap;
-            background-color: #f8f8f8;
-            padding: 10px;
+        #error {
+            color: red;
+            font-weight: bold;
+        }
+        iframe {
+            width: 100%;
+            height: 80vh;
             border: 1px solid #ddd;
             border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <h1>Fetch Data from URL Parameter</h1>
-    <p>The response from the target URL will appear below:</p>
-    <div id="response">Waiting for response...</div>
+    <h1>Embed Content from URL Parameter</h1>
+    <p>If a valid URL is provided, its content will appear below:</p>
+    <div id="error"></div>
+    <iframe id="iframe" src="" title="Embedded Content"></iframe>
 
     <script>
-        // Hàm để lấy giá trị của tham số URL
+        // Hàm để lấy giá trị tham số từ URL
         function getQueryParam(param) {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(param);
         }
 
-        async function fetchData() {
+        // Hàm nhúng nội dung qua iframe
+        function embedContent() {
             const targetUrl = getQueryParam('url'); // Lấy tham số 'url' từ query
-            const responseDiv = document.getElementById('response');
+            const errorDiv = document.getElementById('error');
+            const iframe = document.getElementById('iframe');
 
             if (!targetUrl) {
-                responseDiv.textContent = "No URL parameter found. Please provide ?url=<your-target-url>";
+                errorDiv.textContent = "No URL parameter found. Please provide ?url=<your-target-url>";
+                iframe.style.display = 'none'; // Ẩn iframe nếu không có URL
                 return;
             }
 
-            responseDiv.textContent = "Loading...";
             try {
-                const response = await fetch(targetUrl);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                const data = await response.text(); // Lấy dữ liệu dưới dạng văn bản
-                responseDiv.textContent = data;
+                // Kiểm tra URL hợp lệ
+                const validUrl = new URL(targetUrl);
+                iframe.src = validUrl.href; // Gán URL vào iframe
+                errorDiv.textContent = ''; // Xóa thông báo lỗi (nếu có)
+                iframe.style.display = 'block'; // Hiển thị iframe
             } catch (error) {
-                responseDiv.textContent = `Error: ${error.message}`;
+                errorDiv.textContent = "Invalid URL provided.";
+                iframe.style.display = 'none'; // Ẩn iframe nếu URL không hợp lệ
             }
         }
 
-        // Thực thi hàm fetchData khi trang được tải
-        fetchData();
+        // Thực thi hàm embedContent khi trang được tải
+        embedContent();
     </script>
 </body>
 </html>
