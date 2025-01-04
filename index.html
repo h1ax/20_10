@@ -1,41 +1,59 @@
-
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Protest+Riot&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="style.css" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetch URL from Param</title>
     <style>
-      .title span {
-        font-size: 1.5em; /* Kích thước chữ 1.5em */
-      }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #response {
+            white-space: pre-wrap;
+            background-color: #f8f8f8;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
     </style>
-    <title>Valentine</title>
-  </head>
-  <body>
-    <main class="container">
-      <img
-        class="cat-img"
-        src="https://media.giphy.com/media/SVkhYVCi8fKPKvypi6/giphy.gif"
-        alt="Picture of a cat"
-      />
-      <p class="title">
-        Bé iuu ơi choo anhh xinn lỗi nhóooo😭<br /><span
-          >Bé hong chọn hoặc thoát là tha lỗi cho anh đó</span
-        >
-      </p>
-      <div class="buttons">
-        <button type="button" class="btn btn--yes">Em chấp nhận</button>
-        <button type="button" class="btn btn--no">Không bao giờ</button>
-      </div>
-    </main>
+</head>
+<body>
+    <h1>Fetch Data from URL Parameter</h1>
+    <p>The response from the target URL will appear below:</p>
+    <div id="response">Waiting for response...</div>
 
-    <script type="module" src="script.js"></script>
-  </body>
+    <script>
+        // Hàm để lấy giá trị của tham số URL
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        async function fetchData() {
+            const targetUrl = getQueryParam('url'); // Lấy tham số 'url' từ query
+            const responseDiv = document.getElementById('response');
+
+            if (!targetUrl) {
+                responseDiv.textContent = "No URL parameter found. Please provide ?url=<your-target-url>";
+                return;
+            }
+
+            responseDiv.textContent = "Loading...";
+            try {
+                const response = await fetch(targetUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.text(); // Lấy dữ liệu dưới dạng văn bản
+                responseDiv.textContent = data;
+            } catch (error) {
+                responseDiv.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        // Thực thi hàm fetchData khi trang được tải
+        fetchData();
+    </script>
+</body>
 </html>
